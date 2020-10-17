@@ -70,3 +70,20 @@ header {
     color: white;
 }
   
+#radioContainers{
+    margin-left: 28em;
+}
+.planetRadios {
+    float: left;
+    display: block;
+}
+
+#numberInputs label {
+    float:left;
+}
+
+#numberInputs input{
+    width:100%;
+    float:right;
+}
+
