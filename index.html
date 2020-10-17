@@ -18,16 +18,7 @@
         <h1>SPACENETIC</h1>
     </header>
     <div id="app">
-        <div v-if="!universeCreated" id="control">
-            <div v-for="object in objects">
-              <label>{{object}}</label>
-              <input type="radio" :value="object" @click="addToSelected">
-            </div>
-            <button @click='makeSpace'>Create A Universe</button>
-          </div>
-          <div v-else id="control">
-            <button @click='resetUniverse'>Destroy Your Universe</button>
-          </div>
+        <solarsystem :viz="viz"></solarsystem>
     </div>
     <div id="space">
 
