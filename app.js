@@ -9,38 +9,42 @@ Vue.component('solarsystem',
                     <h3>Craft</h3>
                     <div id="numberInputs">
                         <label for='craft'>Craft Name</label>
-                        <input id='craft' type="text" v-model='name' :placeholder='name'/>
+                        <input step=0.00000000000001 id='craft' type="text" v-model='name' :placeholder='name'/>
                         <br>
                         <label for='axis'>Semi Major Axis</label>
-                        <input id='axis' type="number" v-model='semiMajorAxis' :placeholder='semiMajorAxis'/>
+                        <input step=0.00000000000001 id='axis' type="number" v-model='semiMajorAxis' :placeholder='semiMajorAxis'/>
                         <br>
                         <label for='ecc'>Eccentricity</label>
-                        <input id='ecc' type="number" v-model='Eccentricity' :placeholder='Eccentricity'/>
+                        <input step=0.00000000000001 id='ecc' type="number" v-model='Eccentricity' :placeholder='Eccentricity'/>
                         <br>
                         <label for='inc'>Inclination</label>
-                        <input id='inc' type="number" v-model='Inclination' :placeholder='Inclination'/>
+                        <input step=0.00000000000001 id='inc' type="number" v-model='Inclination' :placeholder='Inclination'/>
                         <br>
                         <label for='node'>Longitude Of Ascending Node</label>
-                        <input id='node' type="number" v-model='longitudeOfAscendingNode' :placeholder='longitudeOfAscendingNode'/>
+                        <input step=0.00000000000001 id='node' type="number" v-model='longitudeOfAscendingNode' :placeholder='longitudeOfAscendingNode'/>
                         <br>
                         <label for='perihelion'>Argument of Perihelion</label>
-                        <input id='perihelion' type="number" v-model='argumentOfPerihelion' :placeholder='argumentOfPerihelion'/>
+                        <input step=0.00000000000001 id='perihelion' type="number" v-model='argumentOfPerihelion' :placeholder='argumentOfPerihelion'/>
                         <br>
                         <label for='anomaly'>Mean Anomaly</label>
-                        <input id='anomaly' type="number" v-model='meanAnomaly' :placeholder='meanAnomaly'/>
+                        <input step=0.00000000000001 id='anomaly' type="number" v-model='meanAnomaly' :placeholder='meanAnomaly'/>
                         <br>
                         <label for='epoch'>epochInJD</label>
-                        <input id='epoch' type="number" v-model='epochInJD' :placeholder='epochInJD'/>
+                        <input step=0.00000000000001 id='epoch' type="number" v-model='epochInJD' :placeholder='epochInJD'/>
                         <br>
                     </div>
                     <br>
                     <h3>Planets</h3>
                     <div id="radioContainers">
                         <div class="planetRadios" v-for="object in objects">
-                            <label>{{object}}</label>
                             <input type="radio" :value="object" @click="addToSelected">
+                            <label>{{object}}</label>
                         </div>
-                    </div><br>
+                    </div>
+                    <br>
+                    <input type="radio" @click="addPerseids"/>
+                    <label>Perseids</label>
+                    <br>
                     <button @click='makeSpace'>Create A Universe</button>
                 </div>
                 <div v-else id="control">
@@ -53,6 +57,7 @@ Vue.component('solarsystem',
             return {
                 objects: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'],
                 selectedObjs: [],
+                meteors: false,
                 name: 'Tesla Roadster',
                 semiMajorAxis: 1.324870564730606E+00,
                 Eccentricity: 2.557785995665682E-01,
@@ -65,6 +70,9 @@ Vue.component('solarsystem',
             }
         },
         methods: {
+            addPerseids(){
+                this.meteors = true;
+            },
             addToSelected(e) {
                 this.selectedObjs.push(e.target.value)
             },
@@ -128,12 +136,37 @@ Vue.component('solarsystem',
                 this.universeCreated = true
                 this.viz.createStars();
                 this.createSun();
-                if (this.selectedObjs)
+                if (this.selectedObjs){
                     this.createPlanets();
                     this.createObject();
+                    if(this.meteors){
+                        this.createPerseids();
+                    }
+                }
+
             },
             resetUniverse() {
                 window.location.reload()
+            },
+            createPerseids(){
+                window.PERSEIDS_EPHEM.forEach((rawEphem, idx) => {
+                    const ephem = new Spacekit.Ephem({
+                      a: rawEphem.a,
+                      e: rawEphem.e,
+                      i: (rawEphem.i * Math.PI) / 180,
+                      om: (rawEphem.om * Math.PI) / 180,
+                      w: (rawEphem.w * Math.PI) / 180,
+                      ma: 0,
+                      epoch: Math.random() * 2500000,
+                    });
+                  
+                    this.viz.createObject(`perseids_${idx}`, {
+                      hideOrbit: true,
+                      particleSize: 10,
+                      textureUrl: '{{assets}}/sprites/fuzzyparticle.png',
+                      ephem,
+                    });
+                });
             }
 
         }
@@ -146,6 +179,7 @@ const app = new Vue({
         return {
             viz: new Spacekit.Simulation(document.getElementById('space'), {
                 basePath: 'https://typpo.github.io/spacekit/src',
+                maxNumParticles: 2 ** 16,
             }),
         }
     }
