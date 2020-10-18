@@ -172,15 +172,50 @@ Vue.component('solarsystem',
         }
     })
 
+Vue.component('earthparticles', {
+       props: {
+           viz: {
+               type: Object,
+               required: true
+           }
+       },
+       template: `
+       <div><h1>Earth</h1></div>
+       `,
+    }
+)
 
 const app = new Vue({
     el: "#app",
     data() {
         return {
+            sPage: false,
+            selectPage: 0,
             viz: new Spacekit.Simulation(document.getElementById('space'), {
                 basePath: 'https://typpo.github.io/spacekit/src',
                 maxNumParticles: 2 ** 16,
-            }),
+            })
+        }
+    },
+    methods: {
+        selectP(e){
+            this.sPage = true;
+            this.selectPage = e.target.value;
+        }
+    },
+    computed: {
+        solarSystem(){
+            if (this.selectPage === '1'){
+                return true
+            } 
+            return false
+        },
+        earth(){
+            console.log(this.selectPage)
+            if (this.selectPage === '2'){
+                return true
+            } 
+            return false
         }
     }
 })
