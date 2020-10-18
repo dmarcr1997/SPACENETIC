@@ -47,6 +47,8 @@ Vue.component('solarsystem',
                     <input type="radio" @click="selectAll"/>
                     <label>Select All</label>
                     <br>
+                    <button @click="toggleAbout">What Does All of this Mean?</button>
+                    <about v-if="about"></about>
                     <button @click='makeSpace'>Create A Universe</button>
                 </div>
                 <div v-else id="control">
@@ -60,18 +62,22 @@ Vue.component('solarsystem',
                 objects: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune'],
                 selectedObjs: [],
                 meteors: false,
-                name: 'Tesla Roadster',
+                name: 'Space Craft',
                 semiMajorAxis: 1.324870564730606E+00,
                 Eccentricity: 2.557785995665682E-01,
                 Inclination: 1.077550722804860E+00,
                 longitudeOfAscendingNode: 3.170946964325638E+02,
                 argumentOfPerihelion: 1.774865822248395E+02,
                 meanAnomaly: 1.764302192487955E+02,
-                epochInJD: 2458426.500000000,
-                universeCreated: false
+                epochInJD: 2458400.500000000,
+                universeCreated: false,
+                about: false
             }
         },
         methods: {
+            toggleAbout() {
+                this.about = !this.about
+            },
             selectAll() {
                 this.meteors = true;
                 this.selectedObjs = this.objects;
@@ -119,23 +125,23 @@ Vue.component('solarsystem',
                 const craft = this.viz.createObject('spaceman', {
                     labelText: this.name,
                     ephem: new Spacekit.Ephem({
-                        // These parameters define orbit shape.
+                       
                         a: this.semiMajorAxis,
                         e: this.Eccentricity,
                         i: this.Inclination,
 
-                        // These parameters define the orientation of the orbit.
+                      
                         om: this.longitudeOfAscendingNode,
                         w: this.argumentOfPerihelion,
                         ma: this.meanAnomaly,
 
-                        // Where the object is in its orbit.
+                       
                         epoch: this.epochInJD,
-                    }, 'deg'),
+                    }, 'deg')
                 });
             },
             createSun() {
-                this.viz.createObject('sun', Spacekit.SpaceObjectPresets.SUN);
+                this.sun = this.viz.createObject('sun', Spacekit.SpaceObjectPresets.SUN);
             },
             makeSpace() {
                 // Create a background using Yale Bright Star Catalog data.
@@ -292,6 +298,7 @@ Vue.component('earthparticles', {
             const delta = max - min;
             return min + Math.random() * delta;
         },
+
         resetUniverse() {
             window.location.reload()
         }
@@ -299,6 +306,25 @@ Vue.component('earthparticles', {
 }
 )
 
+Vue.component('about', {
+    template: `
+    <div id='control'>
+        <div id='about'>
+            <h3>Orbital Mechanic Variables</h3>
+            <h4>Orbit Shape</h4>
+            <p>Semi Major Axis: The semi-major axis is one half of the major axis<a href='https://en.wikipedia.org/wiki/Semi-major_and_semi-minor_axes#:~:text=The%20semi%2Dmajor%20axis%20is,center%20of%20the%20conic%20section.'>...</a></p>
+            <p>Eccentricity: The orbital eccentricity of an astronomical object is a dimensionless parameter that determines the amount by which its orbit around another body deviates from a perfect circle<a href='https://en.wikipedia.org/wiki/Orbital_eccentricity'>...</a></p> 
+            <p>Inclination: Measures the tilt of an object's orbit around a celestial body<a href='https://en.wikipedia.org/wiki/Orbital_inclination'>...</a></p>
+            <h4>Orientation of Orbit</h4>
+            <p>Longitude of Ascending Node: The angle from a specified reference direction, called the origin of longitude<a href='https://en.wikipedia.org/wiki/Longitude_of_the_ascending_node#:~:text=The%20longitude%20of%20the%20ascending%20node%20(%E2%98%8A%20or%20%CE%A9)%20is,of%20an%20object%20in%20space.&text=The%20ascending%20node%20is%20the,seen%20in%20the%20adjacent%20image.'>...</a></p>
+            <p>Argument of Perihelion: The point of closest approach between the orbiting body (e.g. a planet) and the focus<a href='https://astronomy.swin.edu.au/cosmos/A/Argument+Of+Perihelion#:~:text=The%20perihelion%20is%20the%20point,argument%20of%20perihelion%20(%CF%89).'>...</a></p>
+            <p>Mean Anomaly: The fraction of an elliptical orbit's period that has elapsed since the orbiting body passed periapsis<a href='https://en.wikipedia.org/wiki/Mean_anomaly'>...</a></p>  
+            <h4>Location In Orbit</h4>
+            <p>Epoch: Moment in time used as a reference point for some time-varying astronomical quantity<a href='https://en.wikipedia.org/wiki/Epoch_(astronomy)'>...</a></p>
+        </div>
+    </div>
+    `
+})
 const app = new Vue({
     el: "#app",
     data() {
