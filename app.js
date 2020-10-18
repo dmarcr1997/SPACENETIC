@@ -306,21 +306,22 @@ const app = new Vue({
         }
     },
     methods: {
-        selectP(e) {
+        selectP(value) {
             this.sPage = true;
-            this.selectPage = e.target.value;
+            this.selectPage = value;
+            window.scrollTo(0,0);
         }
     },
     computed: {
         solarSystem() {
-            if (this.selectPage === '1') {
+            if (this.selectPage === 1) {
                 return true
             }
             return false
         },
         earth() {
             console.log(this.selectPage)
-            if (this.selectPage === '2') {
+            if (this.selectPage === 2) {
                 return true
             }
             return false

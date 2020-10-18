@@ -18,13 +18,10 @@
         <h1>SPACENETIC</h1>
     </header>
     <div id="app">
-        <div v-if="!sPage">
-            <input type="radio" value=1 @click="selectP">
-            <label>Solar System</label>
-            
-            <input type="radio" value=2 @click="selectP">
-            <label>Earth</label>
-            
+        <div v-if="!sPage" id="NavButtons">
+            <img id="landingIm" src='./astro.jpg' alt='astro'/>
+            <button @click="selectP(1)">Solar System</button>
+            <button @click="selectP(2)">Planet Particles</button>            
         </div>
         <solarsystem v-if="solarSystem" :viz="viz"></solarsystem>
         <earthparticles v-else-if="earth" :viz="viz"></earthParticles>

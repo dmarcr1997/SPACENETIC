@@ -8,12 +8,13 @@ html {
   
 body {
     margin: 0;
+    background-image: url('https://blenderartists.org/uploads/default/original/4X/7/e/2/7e2d7bea4ac21388c4a96e1371f375c4ce00094b.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
   
 header {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
-    margin: 3rem;
-    border-radius: 10px;
     padding: 1rem;
     background-color: #1b995e;
     color: white;
@@ -26,6 +27,7 @@ header {
     border-radius: 10px;
     padding: 1rem;
     text-align: center;
+    background-color: whitesmoke;
 } 
 
 #control input {
@@ -47,6 +49,7 @@ header {
     color: white;
     padding: 0.05rem 1rem;
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.26);
+    width: 100%;
 }
   
 #control button:hover,
@@ -85,5 +88,29 @@ header {
 #numberInputs input{
     width:100%;
     float:right;
+}
+
+#landingIm {
+    width:100%;
+    height: 70%;
+}
+
+#NavButtons button {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid #ff0077;
+    background-color: #ff0077;
+    color: white;
+    padding: 0.05rem 1rem;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.26);
+    width: 50%;
+    float:left;
+}
+  
+#NavButtons button:hover,
+#NavButtons button:active {
+    background-color: #ec3169;
+    border-color: #ec3169;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
 }
 
