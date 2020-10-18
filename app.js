@@ -70,7 +70,7 @@ Vue.component('solarsystem',
             }
         },
         methods: {
-            addPerseids(){
+            addPerseids() {
                 this.meteors = true;
             },
             addToSelected(e) {
@@ -136,10 +136,10 @@ Vue.component('solarsystem',
                 this.universeCreated = true
                 this.viz.createStars();
                 this.createSun();
-                if (this.selectedObjs){
+                if (this.selectedObjs) {
                     this.createPlanets();
                     this.createObject();
-                    if(this.meteors){
+                    if (this.meteors) {
                         this.createPerseids();
                     }
                 }
@@ -148,23 +148,23 @@ Vue.component('solarsystem',
             resetUniverse() {
                 window.location.reload()
             },
-            createPerseids(){
+            createPerseids() {
                 window.PERSEIDS_EPHEM.forEach((rawEphem, idx) => {
                     const ephem = new Spacekit.Ephem({
-                      a: rawEphem.a,
-                      e: rawEphem.e,
-                      i: (rawEphem.i * Math.PI) / 180,
-                      om: (rawEphem.om * Math.PI) / 180,
-                      w: (rawEphem.w * Math.PI) / 180,
-                      ma: 0,
-                      epoch: Math.random() * 2500000,
+                        a: rawEphem.a,
+                        e: rawEphem.e,
+                        i: (rawEphem.i * Math.PI) / 180,
+                        om: (rawEphem.om * Math.PI) / 180,
+                        w: (rawEphem.w * Math.PI) / 180,
+                        ma: 0,
+                        epoch: Math.random() * 2500000,
                     });
-                  
+
                     this.viz.createObject(`perseids_${idx}`, {
-                      hideOrbit: true,
-                      particleSize: 10,
-                      textureUrl: '{{assets}}/sprites/fuzzyparticle.png',
-                      ephem,
+                        hideOrbit: true,
+                        particleSize: 10,
+                        textureUrl: '{{assets}}/sprites/fuzzyparticle.png',
+                        ephem,
                     });
                 });
             }
@@ -173,16 +173,124 @@ Vue.component('solarsystem',
     })
 
 Vue.component('earthparticles', {
-       props: {
-           viz: {
-               type: Object,
-               required: true
-           }
-       },
-       template: `
-       <div><h1>Earth</h1></div>
-       `,
+    props: {
+        viz: {
+            type: Object,
+            required: true
+        }
+    },
+    template: `
+        <div>
+            <div v-if="!planetCreated" id="control" >
+                <div id="numberInputs">
+                            <label for='ParticlesCount'>Surface Particles Count</label>
+                            <input id='ParticlesCount' type="text" v-model='surfaceParticlesCount' :placeholder='surfaceParticlesCount'/>
+                            <br>
+                            <label for='particleSize'>Particle Size</label>
+                            <input id='particleSize' type="number" v-model='particleSize' :placeholder='particleSize'/>
+                            <br>
+                            <label for='surfaceColor'>Surface Particle Color </label>
+                            <input id='surfaceColor' type="color" v-model='surfaceColor' :placeholder='surfaceColor'/>
+                            <br>
+                            <label for='nearColor'>Near Particle Color</label>
+                            <input id='nearColor' type="color" v-model='nearColor' :placeholder='nearColor'/>
+                            <br>
+                            
+                </div>
+                <br>
+                <h3>Planets</h3>
+                <div class="planetRadios">
+                    
+                    <input type="radio" value="earth" v-model="planet">
+                    <label>Earth</label>
+
+                    <input type="radio" value="venus" v-model="planet">
+                    <label>Venus</label>  
+                </div><br>
+                <button @click="makeSpace">Submit</button>
+            </div>
+            <div v-else id="control">
+                <button @click='resetUniverse'>Destroy</button>
+            </div>
+        </div>
+    `,
+    data(){
+        return{
+            pictures: {
+                'earth': 'https://typpo.github.io/spacekit/examples/static-particle-field/earth.jpg',
+                'venus': 'https://upload.wikimedia.org/wikipedia/commons/1/19/Cylindrical_Map_of_Venus.jpg'
+            },
+            surfacePositions: [],
+            nearPositions: [],
+            farPositions: [],
+            surfaceParticlesCount: 10,
+            particleSize: 8,
+            surfaceColor: 'yellow',
+            nearColor: 0x0099ff,
+            planet: 'earth',
+            planetCreated: false
+        }
+    },
+    methods: {
+        makeSpace() {
+            this.planetCreated = true
+            this.viz.createStars()
+            const nearParticlesCount = this.surfaceParticlesCount * 10;
+            const farParticlesCount = this.surfaceParticlesCount * 100;
+            this.fillParticles(this.surfaceParticlesCount, 1, 1, this.surfacePositions);
+            this.fillParticles(nearParticlesCount, 1.5, 2.5, this.nearPositions);
+            this.fillParticles(farParticlesCount, 2.5, 5, this.farPositions);
+            this.viz.createStaticParticles('surface', this.surfacePositions, {
+                defaultColor: this.surfaceColor,
+                size: this.particleSize,
+            });
+            this.viz.createStaticParticles('near', this.nearPositions, {
+                defaultColor: this.nearColor,
+                size: this.particleSize,
+            });
+            this.viz.createStaticParticles('far', this.farPositions, {});
+            console.log(this.pictures.mars)
+            this.createPlanet()
+        },
+        createPlanet(){
+            this.viz.createSphere(this.planet, {
+                textureUrl: this.pictures[`${this.planet}`],
+                debug: {
+                    showAxes: true,
+                },
+            });
+        },
+        fillParticles(count, minRange, maxRange, particles) {
+            for (let i = 0; i < count; i++) {
+                const newParticle = this.randomPosition(minRange, maxRange);
+                particles.push(newParticle);
+            }
+        },
+        randomPosition(minRange, maxRange) {
+            const delta = maxRange - minRange;
+            let mag = 1;
+
+            if (delta > 0) {
+                mag = delta * Math.random() + minRange;
+            }
+
+            const ra = this.randomAngle(0, 2 * Math.PI);
+            const dec = this.randomAngle(-Math.PI / 2, Math.PI / 2);
+            const z = mag * Math.sin(dec);
+            const x = mag * Math.cos(dec) * Math.cos(ra);
+            const y = mag * Math.cos(dec) * Math.sin(ra);
+
+            return [x, y, z];
+        },
+        randomAngle(min, max) {
+            const delta = max - min;
+            return min + Math.random() * delta;
+        },
+        resetUniverse() {
+            window.location.reload()
+        }
     }
+}
 )
 
 const app = new Vue({
@@ -198,23 +306,23 @@ const app = new Vue({
         }
     },
     methods: {
-        selectP(e){
+        selectP(e) {
             this.sPage = true;
             this.selectPage = e.target.value;
         }
     },
     computed: {
-        solarSystem(){
-            if (this.selectPage === '1'){
+        solarSystem() {
+            if (this.selectPage === '1') {
                 return true
-            } 
+            }
             return false
         },
-        earth(){
+        earth() {
             console.log(this.selectPage)
-            if (this.selectPage === '2'){
+            if (this.selectPage === '2') {
                 return true
-            } 
+            }
             return false
         }
     }
