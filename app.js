@@ -29,7 +29,7 @@ Vue.component('solarsystem',
                         <label for='anomaly'>Mean Anomaly</label>
                         <input step=0.00000000000001 id='anomaly' type="number" v-model='meanAnomaly' :placeholder='meanAnomaly'/>
                         <br>
-                        <label for='epoch'>epochInJD</label>
+                        <label for='epoch'>Epoch In JD</label>
                         <input step=0.00000000000001 id='epoch' type="number" v-model='epochInJD' :placeholder='epochInJD'/>
                         <br>
                     </div>
@@ -44,6 +44,8 @@ Vue.component('solarsystem',
                     <br>
                     <input type="radio" @click="addPerseids"/>
                     <label>Perseids</label>
+                    <input type="radio" @click="selectAll"/>
+                    <label>Select All</label>
                     <br>
                     <button @click='makeSpace'>Create A Universe</button>
                 </div>
@@ -70,6 +72,10 @@ Vue.component('solarsystem',
             }
         },
         methods: {
+            selectAll() {
+                this.meteors = true;
+                this.selectedObjs = this.objects;
+            },
             addPerseids() {
                 this.meteors = true;
             },
@@ -86,7 +92,7 @@ Vue.component('solarsystem',
                             this.viz.createObject('venus', Spacekit.SpaceObjectPresets.VENUS);
                             break;
                         case 'earth':
-                            this.viz.createObject('earth', Spacekit.SpaceObjectPresets.EARTH);
+                            this.viz.createObject('earth',Spacekit.SpaceObjectPresets.EARTH);
                             break;
                         case 'mars':
                             this.viz.createObject('mars', Spacekit.SpaceObjectPresets.MARS);
@@ -302,6 +308,8 @@ const app = new Vue({
             viz: new Spacekit.Simulation(document.getElementById('space'), {
                 basePath: 'https://typpo.github.io/spacekit/src',
                 maxNumParticles: 2 ** 16,
+                jd: 0.0,
+                jdDelta: 2,
             })
         }
     },
