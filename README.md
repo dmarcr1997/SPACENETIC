@@ -10,7 +10,7 @@ Much of the code I wrote with spacekit was inspired by their examples and my pas
 
 ## Software
 I made this project using Vue and spacekit.js
-## To get this running## 
+### To get this running
  * fork the repo 
  * clone the code
  * open the HTML page
